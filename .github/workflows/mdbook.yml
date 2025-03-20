@@ -28,10 +28,16 @@ jobs:
   # Build job
   build:
     runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/hacktricks-wiki/hacktricks-cloud/translator-image:latest
+    environment: prod
+    
     env:
       MDBOOK_VERSION: 0.4.36
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Needed to download everything to be able to access the master & language branches
       - name: Install mdBook
         run: |
           curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf -y | sh
@@ -41,7 +47,7 @@ jobs:
         id: pages
         uses: actions/configure-pages@v5
       - name: Build with mdBook
-        run: mdbook build
+        run: MDBOOK_BOOK__LANGUAGE=en mdbook build
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
